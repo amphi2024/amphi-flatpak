@@ -1,0 +1,11 @@
+[Desktop Entry]
+X-AppImage-Arch=x84_64
+X-AppImage-Version=latest
+X-AppImage-Name=Notes
+Name=Notes
+Exec=notes
+Icon=com.amphi.notes
+Type=Application
+Terminal=false
+Categories=Utility;
+Comment=Cross-platform note-taking app that enables users to sync their data with a self-hosted server

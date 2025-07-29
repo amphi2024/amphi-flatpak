@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>com.amphi.music</id>
+  <name>Amphi Notes</name>
+  <summary>Cross-platform note-taking app that enables users to sync their data with a self-hosted server</summary>
+
+  <launchable type="desktop-id">com.amphi.notes.desktop</launchable>
+  <developer_name>Amphi</developer_name>
+  <project_license>Apache-2.0</project_license>
+  <url type="homepage">https://amphi.site</url>
+  <metadata_license>CC0-1.0</metadata_license>
+  <categories>
+    <category>Productivity</category>
+  </categories>
+</component>
