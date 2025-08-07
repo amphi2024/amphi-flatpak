@@ -17,27 +17,26 @@ modules:
   - name: notes
     buildsystem: simple
     build-commands:
-      - tar --use-compress-program=unzstd -xf notes.tar.zst
+      - tar -xzf notes.tar.gz
       - install -Dm755 notes /app/bin/notes
       - cp -r lib /app/bin/lib
       - cp -r data /app/bin/data
-      - cp -r external/* /app/bin/lib/
 
       - install -Dm644 com.amphi.notes.desktop /app/share/applications/com.amphi.notes.desktop
-      - install -Dm644 icon.svg /app/share/icons/hicolor/128x128/apps/com.amphi.notes.svg
-    
+      - install -Dm644 icon.svg /app/share/icons/hicolor/scalable/apps/com.amphi.notes.svg
+
     sources:
       - type: file
-        dest-filename: notes.tar.zst
+        dest-filename: notes.tar.gz
         only-arches: [x86_64]
-        url: https://amphi.site/releases/notes/notes-linux-x64-1.1.0.tar.zst
-        sha256: bae2fcd1a99578c13adac6e7a4ef282b14960dafda65e81b37fd42eea08a7938
+        url: https://github.com/amphi2024/notes/releases/download/v1.1.1/notes-linux-x64-1.1.1.tar.gz
+        sha256: 1b1fbd95ff8097214aef887158ad3e2285c7bc48223a0c5d41c6322e8ecedefd
 
       - type: file
-        dest-filename: notes.tar.zst
+        dest-filename: notes.tar.gz
         only-arches: [aarch64]
-        url: https://amphi.site/releases/notes/notes-linux-arm64-1.1.0.tar.zst
-        sha256: 546d6e19a7d514fa2623c5ebc35a24890f5c26ca7581bd3cc0b96fc9b9dadd47
+        url: https://github.com/amphi2024/notes/releases/download/v1.1.1/notes-linux-arm64-1.1.1.tar.gz
+        sha256: 440d7c4d04aac7d258d286af022dfe1bd623ebd05b16149936c0fa378ae21472
 
       - type: file
         path: com.amphi.notes.metainfo.xml
@@ -46,12 +45,235 @@ modules:
       - type: file
         path: icon.svg
 
-      - type: dir
-        dest: external
-        path: external_x64
-        only-arches: [x86_64]
+    modules:
+      - name: libmpv
+        cleanup:
+          - /include
+          - /lib/pkgconfig
+          - /share/applications
+          - /share/bash-completion
+          - /share/doc
+          - /share/icons
+          - /share/man
+          - /share/zsh
+        buildsystem: meson
+        config-opts:
+          - -Dlibmpv=true
+          - -Dbuild-date=false
+          - -Dalsa=disabled
+          - -Dlua=enabled
+        sources:
+          - type: archive
+            url: https://github.com/mpv-player/mpv/archive/v0.40.0.tar.gz
+            sha256: 10a0f4654f62140a6dd4d380dcf0bbdbdcf6e697556863dc499c296182f081a3
+            x-checker-data:
+              type: anitya
+              project-id: 5348
+              stable-only: true
+              url-template: https://github.com/mpv-player/mpv/archive/v$version.tar.gz
+              is-important: true
 
-      - type: dir
-        dest: external
-        path: external_arm64
-        only-arches: [aarch64]
+        modules:
+          - shared-modules/lua5.1/lua-5.1.5.json
+
+          - name: libv4l2
+            buildsystem: meson
+            cleanup:
+              - /sbin
+              - /bin
+              - /include
+              - /lib/pkgconfig
+              - /share/man
+              - /share/doc
+            config-opts:
+              - -Dbpf=disabled
+              - -Dudevdir=/app/lib/udev
+              - -Dsystemdsystemunitdir=/dev/null
+            sources:
+              - type: archive
+                url: https://linuxtv.org/downloads/v4l-utils/v4l-utils-1.28.1.tar.xz
+                sha256: 0fa075ce59b6618847af6ea191b6155565ccaa44de0504581ddfed795a328a82
+                x-checker-data:
+                  type: anitya
+                  project-id: 9998
+                  stable-only: true
+                  url-template: https://linuxtv.org/downloads/v4l-utils/v4l-utils-$version.tar.xz
+
+          - name: nv-codec-headers
+            cleanup:
+              - '*'
+            no-autogen: true
+            make-install-args:
+              - PREFIX=/app
+            sources:
+              - type: git
+                url: https://git.videolan.org/git/ffmpeg/nv-codec-headers.git
+                tag: n13.0.19.0
+                commit: e844e5b26f46bb77479f063029595293aa8f812d
+                x-checker-data:
+                  type: git
+                  tag-pattern: ^n([\d.]+)$
+
+          - name: libopenmpt
+            config-opts:
+              - --disable-static
+              - --disable-tests
+              - --disable-examples
+              - --disable-openmpt123
+              - --disable-doxygen-doc
+              - --without-portaudio
+            cleanup:
+              - /include
+              - /lib/pkgconfig
+              - /lib/*.la
+              - /share/doc
+            sources:
+              - type: archive
+                url: https://lib.openmpt.org/files/libopenmpt/src/libopenmpt-0.7.13+release.autotools.tar.gz
+                sha256: dcd7cde4f9c498eb496c4556e1c1b81353e2a74747e8270a42565117ea42e1f1
+                x-checker-data:
+                  type: anitya
+                  project-id: 141468
+                  stable-only: true
+                  url-template: https://lib.openmpt.org/files/libopenmpt/src/libopenmpt-$version+release.autotools.tar.gz
+
+          - name: ffmpeg
+            cleanup:
+              - /include
+              - /lib/pkgconfig
+              - /share/ffmpeg/examples
+            config-opts:
+              - --enable-shared
+              - --disable-static
+              - --enable-gnutls
+              - --enable-gpl
+              - --disable-doc
+              - --disable-programs
+              - --disable-encoders
+              - --disable-muxers
+              - --enable-encoder=png
+              - --enable-encoder=libjxl
+              - --enable-libv4l2
+              - --enable-libdav1d
+              - --enable-libjxl
+              - --enable-libopenmpt
+            sources:
+              - type: archive
+                url: https://ffmpeg.org/releases/ffmpeg-7.1.1.tar.xz
+                sha256: 733984395e0dbbe5c046abda2dc49a5544e7e0e1e2366bba849222ae9e3a03b1
+                x-checker-data:
+                  type: anitya
+                  project-id: 5405
+                  stable-only: true
+                  url-template: https://ffmpeg.org/releases/ffmpeg-$version.tar.xz
+                  is-important: true
+
+          - name: libass
+            cleanup:
+              - /include
+              - /lib/*.la
+              - /lib/pkgconfig
+            config-opts:
+              - --disable-static
+            sources:
+              - type: archive
+                url: https://github.com/libass/libass/releases/download/0.17.3/libass-0.17.3.tar.xz
+                sha256: eae425da50f0015c21f7b3a9c7262a910f0218af469e22e2931462fed3c50959
+                x-checker-data:
+                  type: anitya
+                  project-id: 1560
+                  stable-only: true
+                  url-template: https://github.com/libass/libass/releases/download/$version/libass-$version.tar.xz
+
+          - name: uchardet
+            buildsystem: cmake-ninja
+            config-opts:
+              - -DCMAKE_BUILD_TYPE=Release
+              - -DBUILD_STATIC=0
+            cleanup:
+              - /bin
+              - /include
+              - /lib/pkgconfig
+              - /share/man
+              - /lib/cmake
+            sources:
+              - type: archive
+                url: https://www.freedesktop.org/software/uchardet/releases/uchardet-0.0.8.tar.xz
+                sha256: e97a60cfc00a1c147a674b097bb1422abd9fa78a2d9ce3f3fdcc2e78a34ac5f0
+                x-checker-data:
+                  type: anitya
+                  project-id: 9265
+                  stable-only: true
+                  url-template: https://www.freedesktop.org/software/uchardet/releases/uchardet-$version.tar.xz
+
+          - name: rubberband
+            buildsystem: meson
+            config-opts:
+              - -Ddefault_library=shared
+            cleanup:
+              - /bin
+              - /include
+              - /lib/pkgconfig
+              - /lib/ladspa
+            sources:
+              - type: archive
+                url: https://breakfastquay.com/files/releases/rubberband-4.0.0.tar.bz2
+                sha256: af050313ee63bc18b35b2e064e5dce05b276aaf6d1aa2b8a82ced1fe2f8028e9
+                x-checker-data:
+                  type: anitya
+                  project-id: 4222
+                  stable-only: true
+                  url-template: https://breakfastquay.com/files/releases/rubberband-$version.tar.bz2
+
+          - name: mujs
+            cleanup:
+              - /bin
+              - /include
+              - /lib/pkgconfig
+              - /lib/libmujs.a
+            no-autogen: true
+            make-args:
+              - release
+              - prefix=/app
+            make-install-args:
+              - prefix=/app
+              - install-shared
+            sources:
+              - type: git
+                url: https://github.com/ccxvii/mujs
+                tag: 1.3.6
+                commit: cc569c5fa9a7a2498177693b5617605c2ff5b260
+                x-checker-data:
+                  type: git
+                  tag-pattern: ^([\d.]+)$
+
+          - name: libplacebo
+            buildsystem: meson
+            cleanup:
+              - /include
+              - /lib/pkgconfig
+            sources:
+              - type: git
+                url: https://github.com/haasn/libplacebo.git
+                commit: 3188549fba13bbdf3a5a98de2a38c2e71f04e21e
+                x-checker-data:
+                  type: git
+                  tag-pattern: ^v([\d.]+)$
+                tag: v7.351.0
+            modules:
+
+              - name: glslang
+                buildsystem: cmake-ninja
+                config-opts:
+                  - -DBUILD_SHARED_LIBS=ON
+                cleanup:
+                  - /bin
+                  - /include
+                  - /lib/cmake
+                sources:
+                  - type: archive
+                    url: https://github.com/KhronosGroup/glslang/archive/refs/tags/11.12.0.tar.gz
+                    sha256: 7795a97450fecd9779f3d821858fbc2d1a3bf1dd602617d95b685ccbcabc302f
+
+
+
