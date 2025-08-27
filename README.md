@@ -26,6 +26,12 @@ flatpak install amphi com.amphi.notes
 flatpak install amphi com.amphi.music
 ```
 
+#### Photos
+
+```bash
+flatpak install amphi com.amphi.photos
+```
+
 ## Build
 
 If you want to build the apps locally using flatpak-builder:

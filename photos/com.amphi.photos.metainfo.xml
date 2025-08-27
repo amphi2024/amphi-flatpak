@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>com.amphi.photos</id>
+  <name>Amphi Photos</name>
+  <summary>Cross-platform photos app with self-hosted sync</summary>
+
+  <launchable type="desktop-id">com.amphi.photos.desktop</launchable>
+  <developer_name>Amphi</developer_name>
+  <project_license>Apache-2.0</project_license>
+  <url type="homepage">https://amphi.site</url>
+  <metadata_license>CC0-1.0</metadata_license>
+  <categories>
+    <category>MultiMedia</category>
+  </categories>
+</component>
