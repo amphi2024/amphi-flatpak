@@ -1,0 +1,6 @@
+[submodule "notes/shared-modules"]
+	path = notes/shared-modules
+	url = https://github.com/flathub/shared-modules.git
+[submodule "photos/shared-modules"]
+	path = photos/shared-modules
+	url = https://github.com/flathub/shared-modules.git
