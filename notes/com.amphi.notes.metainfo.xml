@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-  <id>com.amphi.music</id>
+  <id>com.amphi.notes</id>
   <name>Amphi Notes</name>
   <summary>Cross-platform note-taking app that enables users to sync their data with a self-hosted server</summary>
 
