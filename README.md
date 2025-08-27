@@ -47,3 +47,4 @@ flatpak-builder --user --install --force-clean notes/build-dir notes/com.amphi.n
 If you encounter any issues or want to contribute, please open an issue or pull request in the corresponding GitHub repositories:
 - [Notes](https://github.com/amphi2024/notes)
 - [Music](https://github.com/amphi2024/music)
+- [Photos](https://github.com/amphi2024/photos)
