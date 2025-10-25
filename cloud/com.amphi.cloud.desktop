@@ -1,0 +1,11 @@
+[Desktop Entry]
+X-AppImage-Arch=x84_64
+X-AppImage-Version=latest
+X-AppImage-Name=Cloud
+Name=Cloud
+Exec=cloud
+Icon=com.amphi.cloud
+Type=Application
+Terminal=false
+Categories=Network;Utility;FileManager;
+Comment=A self-hosted cloud for secure file storage

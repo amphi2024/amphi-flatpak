@@ -32,6 +32,12 @@ flatpak install amphi com.amphi.music
 flatpak install amphi com.amphi.photos
 ```
 
+#### Cloud
+
+```bash
+flatpak install amphi com.amphi.cloud
+```
+
 ## Build
 
 If you want to build the apps locally using flatpak-builder:
@@ -48,3 +54,4 @@ If you encounter any issues or want to contribute, please open an issue or pull 
 - [Notes](https://github.com/amphi2024/notes)
 - [Music](https://github.com/amphi2024/music)
 - [Photos](https://github.com/amphi2024/photos)
+- [Cloud](https://github.com/amphi2024/cloud)
