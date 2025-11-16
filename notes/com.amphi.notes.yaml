@@ -8,7 +8,7 @@ finish-args:
   - --share=network
   - --filesystem=home
   - --env=LD_LIBRARY_PATH=/app/bin/lib:$LD_LIBRARY_PATH
-  - --socket=x11
+  - --socket=fallback-x11
   - --socket=wayland
   - --talk-name=org.freedesktop.portal.Desktop
 
@@ -29,14 +29,14 @@ modules:
       - type: file
         dest-filename: notes.tar.gz
         only-arches: [x86_64]
-        url: https://github.com/amphi2024/notes/releases/download/v1.1.1/notes-linux-x64-1.1.1.tar.gz
-        sha256: 1b1fbd95ff8097214aef887158ad3e2285c7bc48223a0c5d41c6322e8ecedefd
+        url: https://github.com/amphi2024/notes/releases/download/v2.0.0/Notes-2.0.0-Linux-x86_64.tar.gz
+        sha256: b3314d831c0c4465d535367921432b4d8677e67c1edd467312f3c51b251abc83
 
       - type: file
         dest-filename: notes.tar.gz
         only-arches: [aarch64]
-        url: https://github.com/amphi2024/notes/releases/download/v1.1.1/notes-linux-arm64-1.1.1.tar.gz
-        sha256: 440d7c4d04aac7d258d286af022dfe1bd623ebd05b16149936c0fa378ae21472
+        url: https://github.com/amphi2024/notes/releases/download/v2.0.0/Notes-2.0.0-Linux-arm64.tar.gz
+        sha256: 7cda5d464cd88748f498929052d8b81bf978d65c2d46c381dda535b1a2ceb60d
 
       - type: file
         path: com.amphi.notes.metainfo.xml
@@ -46,6 +46,13 @@ modules:
         path: icon.svg
 
     modules:
+      - name: sqlite
+        buildsystem: autotools
+        sources:
+          - type: archive
+            url: https://sqlite.org/2025/sqlite-autoconf-3510000.tar.gz
+            sha256: 42e26dfdd96aa2e6b1b1be5c88b0887f9959093f650d693cb02eb9c36d146ca5
+
       - name: libmpv
         cleanup:
           - /include
