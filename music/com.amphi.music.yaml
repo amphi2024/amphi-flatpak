@@ -1,6 +1,6 @@
 app-id: com.amphi.music
 runtime: org.freedesktop.Platform
-runtime-version: '24.08'
+runtime-version: '25.08'
 sdk: org.freedesktop.Sdk
 command: music
 
@@ -12,34 +12,33 @@ finish-args:
   - --socket=x11
   - --socket=wayland
   - --talk-name=org.freedesktop.portal.Desktop
-  - --socket=pulseaudio 
+  - --socket=pulseaudio
 
 modules:
 
   - name: music
     buildsystem: simple
     build-commands:
-      - tar --use-compress-program=unzstd -xf music.tar.zst
+      - tar -xzf music.tar.gz
       - install -Dm755 music /app/bin/music
       - cp -r lib /app/bin/lib
       - cp -r data /app/bin/data
-      - cp -r external/* /app/bin/lib/
 
       - install -Dm644 com.amphi.music.desktop /app/share/applications/com.amphi.music.desktop
       - install -Dm644 icon.svg /app/share/icons/hicolor/scalable/apps/com.amphi.music.svg
-     
+
     sources:
       - type: file
-        dest-filename: music.tar.zst
+        dest-filename: music.tar.gz
         only-arches: [x86_64]
-        url: https://amphi.site/releases/music/music-linux-x64-1.0.0.tar.zst
-        sha256: 37a66314529d919025c60239e903793f44d0cd2eca88330eb12f7309b47adc83
+        url: https://github.com/amphi2024/music/releases/download/v2.0.0/Music-2.0.0-Linux-x86_64.tar.gz
+        sha256: 0bc19f59b4b2bb209f7728904b892592776ca9f3ac208a1f47e67bc053d98814
 
       - type: file
-        dest-filename: music.tar.zst
+        dest-filename: music.tar.gz
         only-arches: [aarch64]
-        url: https://amphi.site/releases/music/music-linux-arm64-1.0.0.tar.zst
-        sha256: eab7ea89f55fba1e19836bc6b91c5174fbe68b307b3e0e57b095c65faf73f6cb
+        url: https://github.com/amphi2024/music/releases/download/v2.0.0/Music-2.0.0-Linux-arm64.tar.gz
+        sha256: c8fde2f7b6bacfb620ce4bc109f2b732c5da0d84b7e3ac2126e8d92ebe86bc74
 
       - type: file
         path: com.amphi.music.metainfo.xml
@@ -48,12 +47,207 @@ modules:
       - type: file
         path: icon.svg
 
-      - type: dir
-        dest: external
-        path: external_x64
-        only-arches: [x86_64]
+    modules:
+      - name: sqlite
+        buildsystem: autotools
+        sources:
+          - type: archive
+            url: https://sqlite.org/2025/sqlite-autoconf-3510000.tar.gz
+            sha256: 42e26dfdd96aa2e6b1b1be5c88b0887f9959093f650d693cb02eb9c36d146ca5
 
-      - type: dir
-        dest: external
-        path: external_arm64
-        only-arches: [aarch64]
+      - name: taglib
+        buildsystem: cmake-ninja
+        config-opts:
+          - -DCMAKE_BUILD_TYPE=Release
+          - -DBUILD_SHARED_LIBS=ON
+          - -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+        sources:
+          - type: archive
+            url: https://github.com/taglib/taglib/releases/download/v1.13.1/taglib-1.13.1.tar.gz
+            sha256: c8da2b10f1bfec2cd7dbfcd33f4a2338db0765d851a50583d410bacf055cfd0b
+
+      - name: libmpv
+        cleanup:
+          - /include
+          - /lib/pkgconfig
+          - /share/applications
+          - /share/bash-completion
+          - /share/doc
+          - /share/icons
+          - /share/man
+          - /share/zsh
+        buildsystem: meson
+        config-opts:
+          - -Dlibmpv=true
+          - -Dbuild-date=false
+          - -Dalsa=disabled
+          - -Dlua=enabled
+        sources:
+          - type: archive
+            url: https://github.com/mpv-player/mpv/archive/v0.41.0.tar.gz
+            sha256: ee21092a5ee427353392360929dc64645c54479aefdb5babc5cfbb5fad626209
+            x-checker-data:
+              type: anitya
+              project-id: 5348
+              stable-only: true
+              url-template: https://github.com/mpv-player/mpv/archive/v$version.tar.gz
+              is-important: true
+
+        modules:
+          - shared-modules/lua5.1/lua-5.1.5.json
+
+          - name: libopenmpt
+            config-opts:
+              - --disable-static
+              - --disable-tests
+              - --disable-examples
+              - --disable-openmpt123
+              - --disable-doxygen-doc
+              - --without-portaudio
+            cleanup:
+              - /include
+              - /lib/pkgconfig
+              - /lib/*.la
+              - /share/doc
+            sources:
+              - type: archive
+                url: https://lib.openmpt.org/files/libopenmpt/src/libopenmpt-0.8.4+release.autotools.tar.gz
+                sha256: 627f9bf11aacae615a1f2c982c7e88cb21f11b2d6f0267946f7c82c5eae4943b
+                x-checker-data:
+                  type: anitya
+                  project-id: 141468
+                  stable-only: true
+                  url-template: https://lib.openmpt.org/files/libopenmpt/src/libopenmpt-$version+release.autotools.tar.gz
+
+          - name: ffmpeg
+            cleanup:
+              - /include
+              - /lib/pkgconfig
+              - /share/ffmpeg/examples
+            config-opts:
+              - --enable-shared
+              - --disable-static
+              - --enable-gnutls
+              - --enable-gpl
+              - --disable-doc
+              - --disable-programs
+              - --disable-encoders
+              - --disable-muxers
+              - --enable-encoder=png
+              - --enable-encoder=libjxl
+              - --enable-libv4l2
+              - --enable-libdav1d
+              - --enable-libjxl
+              - --enable-libopenmpt
+            sources:
+              - type: archive
+                url: https://ffmpeg.org/releases/ffmpeg-8.0.1.tar.xz
+                sha256: 05ee0b03119b45c0bdb4df654b96802e909e0a752f72e4fe3794f487229e5a41
+                x-checker-data:
+                  type: anitya
+                  project-id: 5405
+                  stable-only: true
+                  url-template: https://ffmpeg.org/releases/ffmpeg-$version.tar.xz
+                  is-important: true
+
+          - name: libass
+            cleanup:
+              - /include
+              - /lib/*.la
+              - /lib/pkgconfig
+            config-opts:
+              - --disable-static
+            sources:
+              - type: archive
+                url: https://github.com/libass/libass/releases/download/0.17.4/libass-0.17.4.tar.xz
+                sha256: 78f1179b838d025e9c26e8fef33f8092f65611444ffa1bfc0cfac6a33511a05a
+                x-checker-data:
+                  type: anitya
+                  project-id: 1560
+                  stable-only: true
+                  url-template: https://github.com/libass/libass/releases/download/$version/libass-$version.tar.xz
+
+          - name: uchardet
+            buildsystem: cmake-ninja
+            config-opts:
+              - -DCMAKE_BUILD_TYPE=Release
+              - -DBUILD_STATIC=0
+              - -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+            cleanup:
+              - /bin
+              - /include
+              - /lib/pkgconfig
+              - /share/man
+              - /lib/cmake
+            sources:
+              - type: archive
+                url: https://www.freedesktop.org/software/uchardet/releases/uchardet-0.0.8.tar.xz
+                sha256: e97a60cfc00a1c147a674b097bb1422abd9fa78a2d9ce3f3fdcc2e78a34ac5f0
+                x-checker-data:
+                  type: anitya
+                  project-id: 9265
+                  stable-only: true
+                  url-template: https://www.freedesktop.org/software/uchardet/releases/uchardet-$version.tar.xz
+
+          - name: rubberband
+            buildsystem: meson
+            config-opts:
+              - -Ddefault_library=shared
+            cleanup:
+              - /bin
+              - /include
+              - /lib/pkgconfig
+              - /lib/ladspa
+            sources:
+              - type: archive
+                url: https://breakfastquay.com/files/releases/rubberband-4.0.0.tar.bz2
+                sha256: af050313ee63bc18b35b2e064e5dce05b276aaf6d1aa2b8a82ced1fe2f8028e9
+                x-checker-data:
+                  type: anitya
+                  project-id: 4222
+                  stable-only: true
+                  url-template: https://breakfastquay.com/files/releases/rubberband-$version.tar.bz2
+
+          - name: mujs
+            cleanup:
+              - /bin
+              - /include
+              - /lib/pkgconfig
+              - /lib/libmujs.a
+            no-autogen: true
+            make-args:
+              - release
+              - prefix=/app
+            make-install-args:
+              - prefix=/app
+              - install-shared
+            sources:
+              - type: git
+                url: https://codeberg.org/ccxvii/mujs.git
+                tag: 1.3.8
+                commit: 307f18c4216420f2f56e22d8e7040baa39a6304a
+                x-checker-data:
+                  type: git
+                  tag-pattern: ^([\d.]+)$
+              - type: file
+                url: https://www.unicode.org/Public/16.0.0/ucd/UnicodeData.txt
+                sha256: ff58e5823bd095166564a006e47d111130813dcf8bf234ef79fa51a870edb48f
+              - type: file
+                url: https://www.unicode.org/Public/16.0.0/ucd/SpecialCasing.txt
+                sha256: 8d5de354eef79f2395a54c9c7dcebbaf3d30fc962d0f85611ea97aa973a0c451
+
+          - name: libplacebo
+            buildsystem: meson
+            cleanup:
+              - /include
+              - /lib/pkgconfig
+            sources:
+              - type: git
+                url: https://github.com/haasn/libplacebo.git
+                commit: 3188549fba13bbdf3a5a98de2a38c2e71f04e21e
+                x-checker-data:
+                  type: git
+                  tag-pattern: ^v([\d.]+)$
+                tag: v7.351.0
+              - type: patch
+                path: libplacebo-vulkan-python-xml.patch

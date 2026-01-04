@@ -7,3 +7,6 @@
 [submodule "notes/shared-modules"]
 	path = notes/shared-modules
 	url = https://github.com/flathub/shared-modules.git
+[submodule "music/shared-modules"]
+	path = music/shared-modules
+	url = https://github.com/flathub/shared-modules.git
