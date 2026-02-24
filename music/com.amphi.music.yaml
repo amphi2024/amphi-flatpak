@@ -8,7 +8,7 @@ finish-args:
   - --share=network
   - --filesystem=home
   - --device=all
-  - --env=LD_LIBRARY_PATH=/app/bin/lib:$LD_LIBRARY_PATH
+  #  - --env=LD_LIBRARY_PATH=/app/bin/lib:$LD_LIBRARY_PATH
   - --socket=x11
   - --socket=wayland
   - --talk-name=org.freedesktop.portal.Desktop
@@ -20,32 +20,31 @@ modules:
     buildsystem: simple
     build-commands:
       - tar -xzf music.tar.gz
-      - install -Dm755 music /app/bin/music
-      - cp -r lib /app/bin/lib
-      - cp -r data /app/bin/data
 
-      - install -Dm644 com.amphi.music.desktop /app/share/applications/com.amphi.music.desktop
-      - install -Dm644 icon.svg /app/share/icons/hicolor/scalable/apps/com.amphi.music.svg
+      - install -d "${FLATPAK_DEST}/lib"
+      - cp -r lib/* "${FLATPAK_DEST}/lib/"
+      - install -d "${FLATPAK_DEST}/data"
+      - cp -r data/* "${FLATPAK_DEST}/data/"
+
+      - install -Dm755 music "${FLATPAK_DEST}/music"
+      - ln -s "${FLATPAK_DEST}/music" "${FLATPAK_DEST}/bin/music"
+
+      - install -Dm644 com.amphi.music.desktop "${FLATPAK_DEST}/share/applications/${FLATPAK_ID}.desktop"
+      - install -Dm644 com.amphi.music.metainfo.xml "${FLATPAK_DEST}/share/metainfo/${FLATPAK_ID}.metainfo.xml"
+      - install -Dm644 icon.png "${FLATPAK_DEST}/share/icons/hicolor/512x512/apps/${FLATPAK_ID}.png"
+      - install -Dm644 com.amphi.music.screenshot.png "${FLATPAK_DEST}/share/metainfo/com.amphi.music.screenshot.png"
 
     sources:
       - type: file
-        dest-filename: music.tar.gz
-        only-arches: [x86_64]
-        url: https://github.com/amphi2024/music/releases/download/v2.0.0/Music-2.0.0-Linux-x86_64.tar.gz
-        sha256: 0bc19f59b4b2bb209f7728904b892592776ca9f3ac208a1f47e67bc053d98814
-
-      - type: file
-        dest-filename: music.tar.gz
-        only-arches: [aarch64]
-        url: https://github.com/amphi2024/music/releases/download/v2.0.0/Music-2.0.0-Linux-arm64.tar.gz
-        sha256: c8fde2f7b6bacfb620ce4bc109f2b732c5da0d84b7e3ac2126e8d92ebe86bc74
-
+        path: music.tar.gz
       - type: file
         path: com.amphi.music.metainfo.xml
       - type: file
         path: com.amphi.music.desktop
       - type: file
-        path: icon.svg
+        path: icon.png
+      - type: file
+        path: com.amphi.music.screenshot.png
 
     modules:
       - name: sqlite

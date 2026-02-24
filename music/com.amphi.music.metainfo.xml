@@ -2,7 +2,14 @@
 <component type="desktop-application">
   <id>com.amphi.music</id>
   <name>Amphi Music</name>
-  <summary>Cross-platform music player with support for syncing libraries via a self-hosted server</summary>
+  <summary>The premium music service you truly own. Open-source, self-hosted, and available on all platforms</summary>
+  <description>
+    <p>Amphi Music is a free and open-source, cross-platform music player. It plays all your music in most popular formats — no conversion required. You can easily edit song, album, and artist information. Once your music library is set up, you can sync your data across devices via a self-hosted server, letting you access and play your library on any platform.</p>
+
+    <p>If you already use Amphi Notes, Amphi Photos, and Amphi Cloud, your notes, photos, and files can also be synced through the same server.</p>
+
+    <p>To set up your own server, visit: https://amphi.site</p>
+  </description>
 
   <launchable type="desktop-id">com.amphi.music.desktop</launchable>
   <developer_name>Amphi</developer_name>
@@ -13,4 +20,10 @@
     <category>Audio</category>
     <category>Player</category>
   </categories>
+  <screenshots>
+    <screenshot type="default">
+      <image>com.amphi.music.screenshot.png</image>
+      <caption>Screenshot</caption>
+    </screenshot>
+  </screenshots>
 </component>
