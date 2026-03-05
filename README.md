@@ -9,7 +9,7 @@ If you're a user and just want to install Amphi apps:
 ### 1. Add the Amphi Flatpak repository (if you haven't already)
 
 ```bash
-flatpak remote-add --user --if-not-exists amphi https://amphi.site/amphi.flatpakrepo
+flatpak remote-add --user --if-not-exists amphi https://flatpak.amphi.site/amphi.flatpakrepo
 ```
 
 ### 2. Install Apps
