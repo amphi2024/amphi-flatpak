@@ -7,10 +7,10 @@ command: photos
 finish-args:
   - --share=network
   - --filesystem=home
-  - --env=LD_LIBRARY_PATH=/app/bin/lib:$LD_LIBRARY_PATH
   - --socket=x11
   - --socket=wayland
   - --talk-name=org.freedesktop.portal.Desktop
+  - --socket=pulseaudio
 
 modules:
 
@@ -18,33 +18,28 @@ modules:
     buildsystem: simple
     build-commands:
       - tar -xzf photos.tar.gz
-      - install -Dm755 photos /app/bin/photos
-      - cp -r lib /app/bin/lib
-      - cp -r data /app/bin/data
 
-      - install -Dm644 com.amphi.photos.desktop /app/share/applications/com.amphi.photos.desktop
-      - install -Dm644 icon.svg /app/share/icons/hicolor/scalable/apps/com.amphi.photos.svg
+      - install -d "${FLATPAK_DEST}/lib"
+      - cp -r lib/* "${FLATPAK_DEST}/lib/"
+      - install -d "${FLATPAK_DEST}/data"
+      - cp -r data/* "${FLATPAK_DEST}/data/"
+
+      - install -Dm755 photos "${FLATPAK_DEST}/photos"
+      - ln -s "${FLATPAK_DEST}/photos" "${FLATPAK_DEST}/bin/photos"
+
+      - install -Dm644 com.amphi.photos.desktop "${FLATPAK_DEST}/share/applications/${FLATPAK_ID}.desktop"
+      - install -Dm644 com.amphi.photos.metainfo.xml "${FLATPAK_DEST}/share/metainfo/${FLATPAK_ID}.metainfo.xml"
+      - install -Dm644 icon.png "${FLATPAK_DEST}/share/icons/hicolor/512x512/apps/${FLATPAK_ID}.png"
 
     sources:
       - type: file
-        dest-filename: photos.tar.gz
-        only-arches: [x86_64]
-        url: https://github.com/amphi2024/photos/releases/download/v2.0.0/Photos-2.0.0-Linux-x86_64.tar.gz
-        sha256: 949e2cf90e08a7983a0e89bb018ed1857fac1299a47dfc7b6dc94347bc54427d
-
-      - type: file
-        dest-filename: photos.tar.gz
-        only-arches: [aarch64]
-        url: https://github.com/amphi2024/photos/releases/download/v2.0.0/Photos-2.0.0-Linux-arm64.tar.gz
-        sha256: abeaa7b1c4e1f326a4fc553fbcf9e3862fdf53b11fdd8b688903da34d4c87ea7
-
+        path: photos.tar.gz
       - type: file
         path: com.amphi.photos.metainfo.xml
       - type: file
         path: com.amphi.photos.desktop
       - type: file
-        path: icon.svg
-
+        path: icon.png
 
     modules:
       - name: sqlite
