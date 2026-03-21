@@ -1,4 +1,7 @@
 [Desktop Entry]
+X-AppImage-Arch=x84_64
+X-AppImage-Version=latest
+X-AppImage-Name=Photos
 Name=Photos
 Exec=photos
 Icon=com.amphi.photos
