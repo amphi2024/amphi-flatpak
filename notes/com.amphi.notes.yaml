@@ -7,10 +7,10 @@ command: notes
 finish-args:
   - --share=network
   - --filesystem=home
-  - --env=LD_LIBRARY_PATH=/app/bin/lib:$LD_LIBRARY_PATH
   - --socket=fallback-x11
   - --socket=wayland
   - --talk-name=org.freedesktop.portal.Desktop
+  - --device=dri
 
 modules:
 
@@ -18,12 +18,28 @@ modules:
     buildsystem: simple
     build-commands:
       - tar -xzf notes.tar.gz
-      - install -Dm755 notes /app/bin/notes
-      - cp -r lib /app/bin/lib
-      - cp -r data /app/bin/data
 
-      - install -Dm644 com.amphi.notes.desktop /app/share/applications/com.amphi.notes.desktop
-      - install -Dm644 icon.svg /app/share/icons/hicolor/scalable/apps/com.amphi.notes.svg
+      - install -d "${FLATPAK_DEST}/lib"
+      - cp -r lib/* "${FLATPAK_DEST}/lib/"
+      - install -d "${FLATPAK_DEST}/data"
+      - cp -r data/* "${FLATPAK_DEST}/data/"
+
+      - install -Dm755 notes "${FLATPAK_DEST}/notes"
+      - ln -s "${FLATPAK_DEST}/notes" "${FLATPAK_DEST}/bin/notes"
+
+      - install -Dm644 com.amphi.notes.desktop "${FLATPAK_DEST}/share/applications/${FLATPAK_ID}.desktop"
+      - install -Dm644 com.amphi.notes.metainfo.xml "${FLATPAK_DEST}/share/metainfo/${FLATPAK_ID}.metainfo.xml"
+      - install -Dm644 icon.png "${FLATPAK_DEST}/share/icons/hicolor/512x512/apps/${FLATPAK_ID}.png"
+
+    sources:
+      - type: file
+        path: notes.tar.gz
+      - type: file
+        path: com.amphi.notes.metainfo.xml
+      - type: file
+        path: com.amphi.notes.desktop
+      - type: file
+        path: icon.png
 
     sources:
       - type: file
