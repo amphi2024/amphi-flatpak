@@ -4,6 +4,19 @@
   <name>Amphi Notes</name>
   <summary>Cross-platform note-taking app that enables users to sync their data with a self-hosted server</summary>
 
+  <description>
+    <p> Amphi Notes is a free and open-source, cross-platform note-taking app.</p>
+    <p>
+      You can insert images and videos into your notes, and format your text. Organize your notes using folders, just like a traditional file system. Once you've written your notes or stories, you can sync them across devices via a self-hosted server.
+    </p>
+
+    <p>
+      If you already use Amphi Music, Amphi Photos and Amphi Cloud, your music library, photos, and files can also be synced through the same server.
+    </p>
+
+    <p>To set up your own server, visit: https://amphi.site</p>
+  </description>
+
   <launchable type="desktop-id">com.amphi.notes.desktop</launchable>
   <developer_name>Amphi</developer_name>
   <project_license>GPL-3.0-or-later</project_license>
@@ -12,4 +25,12 @@
   <categories>
     <category>Productivity</category>
   </categories>
+
+  <screenshots>
+    <screenshot type="default">
+      <image xml:space="preserve">https://raw.githubusercontent.com/amphi2024/notes/refs/heads/main/preview-linux.png</image>
+      <caption>Screenshot</caption>
+    </screenshot>
+  </screenshots>
+
 </component>
