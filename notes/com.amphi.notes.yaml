@@ -41,26 +41,6 @@ modules:
       - type: file
         path: icon.png
 
-    sources:
-      - type: file
-        dest-filename: notes.tar.gz
-        only-arches: [x86_64]
-        url: https://github.com/amphi2024/notes/releases/download/v2.1.0/Notes-2.1.0-Linux-x86_64.tar.gz
-        sha256: fe0d05920a974081886379b7b6e6a46f23ad38749224c45bcda78b7c4a8bca8f
-
-      - type: file
-        dest-filename: notes.tar.gz
-        only-arches: [aarch64]
-        url: https://github.com/amphi2024/notes/releases/download/v2.1.0/Notes-2.1.0-Linux-arm64.tar.gz
-        sha256: dd4bbc783428ce55a448c67418af490e82e30c3b107301c535077c2bdc69ea00
-
-      - type: file
-        path: com.amphi.notes.metainfo.xml
-      - type: file
-        path: com.amphi.notes.desktop
-      - type: file
-        path: icon.svg
-
     modules:
       - name: sqlite
         buildsystem: autotools
