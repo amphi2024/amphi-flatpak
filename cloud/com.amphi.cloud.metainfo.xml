@@ -4,6 +4,19 @@
   <name>Amphi Cloud</name>
   <summary>A self-hosted cloud for secure file storage</summary>
 
+  <description>
+    <p>Amphi Cloud is a free and open-source, cross-platform cloud storage app for effortless file archiving and previewing.</p>
+    <p>
+      Organize your documents, images, videos, and more into folders, and quickly preview files without opening them — perfect for managing your personal or work archive. Keep your archive under control: sync your files across devices via a self-hosted server, so everything is accessible wherever you are.
+    </p>
+
+    <p>
+      If you already use Amphi Notes, Amphi Music and Amphi Photos, your notes, music library, and photos can also be synced through the same server.
+    </p>
+
+    <p>To set up your own server, visit: https://amphi.site</p>
+  </description>
+
   <launchable type="desktop-id">com.amphi.cloud.desktop</launchable>
   <developer_name>Amphi</developer_name>
   <project_license>GPL-3.0</project_license>
@@ -12,4 +25,12 @@
   <categories>
     <category>Utility</category>
   </categories>
+
+<!--  <screenshots>-->
+<!--    <screenshot type="default">-->
+<!--      <image xml:space="preserve">https://raw.githubusercontent.com/amphi2024/cloud/refs/heads/main/preview-linux.png</image>-->
+<!--      <caption>Screenshot</caption>-->
+<!--    </screenshot>-->
+<!--  </screenshots>-->
+
 </component>
