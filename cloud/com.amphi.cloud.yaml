@@ -1,16 +1,16 @@
 app-id: com.amphi.cloud
 runtime: org.freedesktop.Platform
-runtime-version: '24.08'
+runtime-version: '25.08'
 sdk: org.freedesktop.Sdk
 command: cloud
 
 finish-args:
   - --share=network
   - --filesystem=home
-  - --env=LD_LIBRARY_PATH=/app/bin/lib:$LD_LIBRARY_PATH
   - --socket=x11
   - --socket=wayland
   - --talk-name=org.freedesktop.portal.Desktop
+  - --socket=pulseaudio
   - --device=dri
 
 modules:
@@ -19,34 +19,37 @@ modules:
     buildsystem: simple
     build-commands:
       - tar -xzf cloud.tar.gz
-      - install -Dm755 cloud /app/bin/cloud
-      - cp -r lib /app/bin/lib
-      - cp -r data /app/bin/data
 
-      - install -Dm644 com.amphi.cloud.desktop /app/share/applications/com.amphi.cloud.desktop
-      - install -Dm644 icon.svg /app/share/icons/hicolor/scalable/apps/com.amphi.cloud.svg
+      - install -d "${FLATPAK_DEST}/lib"
+      - cp -r lib/* "${FLATPAK_DEST}/lib/"
+      - install -d "${FLATPAK_DEST}/data"
+      - cp -r data/* "${FLATPAK_DEST}/data/"
+
+      - install -Dm755 cloud "${FLATPAK_DEST}/cloud"
+      - ln -s "${FLATPAK_DEST}/cloud" "${FLATPAK_DEST}/bin/cloud"
+
+      - install -Dm644 com.amphi.cloud.desktop "${FLATPAK_DEST}/share/applications/${FLATPAK_ID}.desktop"
+      - install -Dm644 com.amphi.cloud.metainfo.xml "${FLATPAK_DEST}/share/metainfo/${FLATPAK_ID}.metainfo.xml"
+      - install -Dm644 icon.png "${FLATPAK_DEST}/share/icons/hicolor/512x512/apps/${FLATPAK_ID}.png"
 
     sources:
       - type: file
-        dest-filename: cloud.tar.gz
-        only-arches: [x86_64]
-        url: https://github.com/amphi2024/cloud/releases/download/v1.0.0/Cloud-1.0.0-Linux-x86_64.tar.gz
-        sha256: 317fee636dc7d882f267ea45eb91f2d6efd733843eb1bdcd63705ba5e82dd724
-
-      - type: file
-        dest-filename: cloud.tar.gz
-        only-arches: [aarch64]
-        url: https://github.com/amphi2024/cloud/releases/download/v1.0.0/Cloud-1.0.0-Linux-arm64.tar.gz
-        sha256: b5b3531ff83295167f7e440ef823cae24468286fc1ecc5e3d229fc13494d0a0e
-
+        path: cloud.tar.gz
       - type: file
         path: com.amphi.cloud.metainfo.xml
       - type: file
         path: com.amphi.cloud.desktop
       - type: file
-        path: icon.svg
+        path: icon.png
 
     modules:
+      - name: sqlite
+        buildsystem: autotools
+        sources:
+          - type: archive
+            url: https://sqlite.org/2025/sqlite-autoconf-3510000.tar.gz
+            sha256: 42e26dfdd96aa2e6b1b1be5c88b0887f9959093f650d693cb02eb9c36d146ca5
+
       - name: libmpv
         cleanup:
           - /include
@@ -65,8 +68,8 @@ modules:
           - -Dlua=enabled
         sources:
           - type: archive
-            url: https://github.com/mpv-player/mpv/archive/v0.40.0.tar.gz
-            sha256: 10a0f4654f62140a6dd4d380dcf0bbdbdcf6e697556863dc499c296182f081a3
+            url: https://github.com/mpv-player/mpv/archive/v0.41.0.tar.gz
+            sha256: ee21092a5ee427353392360929dc64645c54479aefdb5babc5cfbb5fad626209
             x-checker-data:
               type: anitya
               project-id: 5348
@@ -76,44 +79,6 @@ modules:
 
         modules:
           - shared-modules/lua5.1/lua-5.1.5.json
-
-          - name: libv4l2
-            buildsystem: meson
-            cleanup:
-              - /sbin
-              - /bin
-              - /include
-              - /lib/pkgconfig
-              - /share/man
-              - /share/doc
-            config-opts:
-              - -Dbpf=disabled
-              - -Dudevdir=/app/lib/udev
-              - -Dsystemdsystemunitdir=/dev/null
-            sources:
-              - type: archive
-                url: https://linuxtv.org/downloads/v4l-utils/v4l-utils-1.28.1.tar.xz
-                sha256: 0fa075ce59b6618847af6ea191b6155565ccaa44de0504581ddfed795a328a82
-                x-checker-data:
-                  type: anitya
-                  project-id: 9998
-                  stable-only: true
-                  url-template: https://linuxtv.org/downloads/v4l-utils/v4l-utils-$version.tar.xz
-
-          - name: nv-codec-headers
-            cleanup:
-              - '*'
-            no-autogen: true
-            make-install-args:
-              - PREFIX=/app
-            sources:
-              - type: git
-                url: https://git.videolan.org/git/ffmpeg/nv-codec-headers.git
-                tag: n13.0.19.0
-                commit: e844e5b26f46bb77479f063029595293aa8f812d
-                x-checker-data:
-                  type: git
-                  tag-pattern: ^n([\d.]+)$
 
           - name: libopenmpt
             config-opts:
@@ -130,8 +95,8 @@ modules:
               - /share/doc
             sources:
               - type: archive
-                url: https://lib.openmpt.org/files/libopenmpt/src/libopenmpt-0.7.13+release.autotools.tar.gz
-                sha256: dcd7cde4f9c498eb496c4556e1c1b81353e2a74747e8270a42565117ea42e1f1
+                url: https://lib.openmpt.org/files/libopenmpt/src/libopenmpt-0.8.4+release.autotools.tar.gz
+                sha256: 627f9bf11aacae615a1f2c982c7e88cb21f11b2d6f0267946f7c82c5eae4943b
                 x-checker-data:
                   type: anitya
                   project-id: 141468
@@ -160,8 +125,8 @@ modules:
               - --enable-libopenmpt
             sources:
               - type: archive
-                url: https://ffmpeg.org/releases/ffmpeg-7.1.1.tar.xz
-                sha256: 733984395e0dbbe5c046abda2dc49a5544e7e0e1e2366bba849222ae9e3a03b1
+                url: https://ffmpeg.org/releases/ffmpeg-8.0.1.tar.xz
+                sha256: 05ee0b03119b45c0bdb4df654b96802e909e0a752f72e4fe3794f487229e5a41
                 x-checker-data:
                   type: anitya
                   project-id: 5405
@@ -178,8 +143,8 @@ modules:
               - --disable-static
             sources:
               - type: archive
-                url: https://github.com/libass/libass/releases/download/0.17.3/libass-0.17.3.tar.xz
-                sha256: eae425da50f0015c21f7b3a9c7262a910f0218af469e22e2931462fed3c50959
+                url: https://github.com/libass/libass/releases/download/0.17.4/libass-0.17.4.tar.xz
+                sha256: 78f1179b838d025e9c26e8fef33f8092f65611444ffa1bfc0cfac6a33511a05a
                 x-checker-data:
                   type: anitya
                   project-id: 1560
@@ -191,6 +156,7 @@ modules:
             config-opts:
               - -DCMAKE_BUILD_TYPE=Release
               - -DBUILD_STATIC=0
+              - -DCMAKE_POLICY_VERSION_MINIMUM=3.5
             cleanup:
               - /bin
               - /include
@@ -241,12 +207,18 @@ modules:
               - install-shared
             sources:
               - type: git
-                url: https://github.com/ccxvii/mujs
-                tag: 1.3.6
-                commit: cc569c5fa9a7a2498177693b5617605c2ff5b260
+                url: https://codeberg.org/ccxvii/mujs.git
+                tag: 1.3.8
+                commit: 307f18c4216420f2f56e22d8e7040baa39a6304a
                 x-checker-data:
                   type: git
                   tag-pattern: ^([\d.]+)$
+              - type: file
+                url: https://www.unicode.org/Public/16.0.0/ucd/UnicodeData.txt
+                sha256: ff58e5823bd095166564a006e47d111130813dcf8bf234ef79fa51a870edb48f
+              - type: file
+                url: https://www.unicode.org/Public/16.0.0/ucd/SpecialCasing.txt
+                sha256: 8d5de354eef79f2395a54c9c7dcebbaf3d30fc962d0f85611ea97aa973a0c451
 
           - name: libplacebo
             buildsystem: meson
@@ -261,20 +233,5 @@ modules:
                   type: git
                   tag-pattern: ^v([\d.]+)$
                 tag: v7.351.0
-            modules:
-
-              - name: glslang
-                buildsystem: cmake-ninja
-                config-opts:
-                  - -DBUILD_SHARED_LIBS=ON
-                cleanup:
-                  - /bin
-                  - /include
-                  - /lib/cmake
-                sources:
-                  - type: archive
-                    url: https://github.com/KhronosGroup/glslang/archive/refs/tags/11.12.0.tar.gz
-                    sha256: 7795a97450fecd9779f3d821858fbc2d1a3bf1dd602617d95b685ccbcabc302f
-
-
-
+              - type: patch
+                path: libplacebo-vulkan-python-xml.patch

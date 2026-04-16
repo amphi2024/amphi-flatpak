@@ -26,11 +26,11 @@
     <category>Utility</category>
   </categories>
 
-<!--  <screenshots>-->
-<!--    <screenshot type="default">-->
-<!--      <image xml:space="preserve">https://raw.githubusercontent.com/amphi2024/cloud/refs/heads/main/preview-linux.png</image>-->
-<!--      <caption>Screenshot</caption>-->
-<!--    </screenshot>-->
-<!--  </screenshots>-->
+  <screenshots>
+    <screenshot type="default">
+      <image xml:space="preserve">https://raw.githubusercontent.com/amphi2024/cloud/refs/heads/main/preview-linux.png</image>
+      <caption>Screenshot</caption>
+    </screenshot>
+  </screenshots>
 
 </component>
